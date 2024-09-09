@@ -1,0 +1,16 @@
+# Basic Settings
+appName: netflix
+namespace: dev
+replicas: 1
+
+# Image Settings
+image:
+  repository: sevenajay/netflix
+  tag: latest
+  pullPolicy: IfNotPresent
+
+# Service Settings
+service:
+  name: netflix-svcs-dev
+  type: LoadBalanancer
+  port: 80
