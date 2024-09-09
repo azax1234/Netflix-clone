@@ -12,5 +12,5 @@ image:
 # Service Settings
 service:
   name: netflix-svcs-dev
-  type: LoadBalanancer
+  type: LoadBalancer
   port: 80
