@@ -45,8 +45,8 @@ jobs:
         token: ${{ secrets.GITHUB_TOKEN }}
         branch: main
     
-    #- name: Trim SONAR_TOKEN
-    #  run: echo "TRIMMED_SONAR_TOKEN=$(echo '${{ secrets.SONAR_TOKEN }}' | tr -d '[:space:]')" >> $GITHUB_ENV
+    - name: Trim SONAR_TOKEN
+      run: echo "TRIMMED_SONAR_TOKEN=$(echo '${{ secrets.SONAR_TOKEN }}' | tr -d '[:space:]')" >> $GITHUB_ENV
 
     - name: SonarCloud Scan
       uses: SonarSource/sonarcloud-github-action@master
