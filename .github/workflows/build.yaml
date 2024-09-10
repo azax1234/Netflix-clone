@@ -28,6 +28,6 @@ jobs:
       with:
         context: .
         push: true
-        tags: ${{ secrets.DOCKERHUB_USERNAME }}/netflix-clone:latest
+        tags: ${{ secrets.DOCKERHUB_USERNAME }}/${{ github.event.repository.name }}:latest
         build-args: |
           ARG=${{ secrets.TMDB_V3_API_KEY }}
