@@ -27,6 +27,6 @@ jobs:
       with:
         context: .
         push: true
-        tags: ${{ secrets.DOCKERHUB_USERNAME }}/${{ github.event.repository.name }}:4.0.0
+        tags: ${{ secrets.DOCKERHUB_USERNAME }}/${{ github.event.repository.name }}:5.0.0
         build-args: |
-          ARG=${{ secrets.TMDB_V3_API_KEY }}
+          TMDB_V3_API_KEY=${{ secrets.TMDB_V3_API_KEY }}

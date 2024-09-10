@@ -7,7 +7,7 @@ replicas: 1
 image:
   repository: azax1234/netflix-clone
   #repository: sevenajay/netflix
-  tag: 4.0.0
+  tag: 5.0.0
   pullPolicy: IfNotPresent
 
 # Service Settings
