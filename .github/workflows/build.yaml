@@ -3,6 +3,10 @@ name: Build, Push Docker Image, and Update Helm Chart
 on:
   push:
     branches: [ main ]
+    paths:
+      - 'src/**'
+      - '!chart/**' # Do not trigger build even if any changes in these paths
+      - '!.github/**' # ** is for multiple strings and paths while * can replace only one string
 
 jobs:
   build-push-update:
@@ -12,13 +16,13 @@ jobs:
       with:
         fetch-depth: 0
 
-    - name: Check commit message
+    - name: Check commit message #skip build id it has 'skip ci' in commit message
       run: |
         if [[ "${{ github.event.head_commit.message }}" == *"skip ci"* ]]; then
           echo "Skipping CI due to commit message"
           exit 78
         fi
-        
+
     - name: Check for existing tags and create initial if needed
       id: check_tags
       run: |
