@@ -1,12 +1,12 @@
-name: Checkout, Static analysis with Sonar, Build and  Push Docker Image,Trivy scan image, Update Helm Chart
+name: Build, Push Docker Image, and Update Helm Chart
 
 on:
   push:
     branches: [ main ]
     paths:
       - 'src/**'
-      - '!chart/**'
-      - '!.github/**'
+      - '!chart/**' # Do not trigger build even if any changes in these paths
+      - '!.github/**' # ** is for multiple strings and paths while * can replace only one string
 
 jobs:
   build-push-update:
@@ -16,7 +16,7 @@ jobs:
       with:
         fetch-depth: 0
 
-    - name: Check commit message
+    - name: Check commit message #skip build id it has 'skip ci' in commit message
       run: |
         if [[ "${{ github.event.head_commit.message }}" == *"skip ci"* ]]; then
           echo "Skipping CI due to commit message"
@@ -44,36 +44,6 @@ jobs:
         token: ${{ secrets.GITHUB_TOKEN }}
         branch: main
 
-    - name: Set up JDK 11
-      uses: actions/setup-java@v3
-      with:
-        java-version: 11
-        distribution: 'adopt'
-
-    - name: Cache SonarQube packages
-      uses: actions/cache@v3
-      with:
-        path: ~/.sonar/cache
-        key: ${{ runner.os }}-sonar
-        restore-keys: ${{ runner.os }}-sonar
-
-   # - name: SonarQube Analysis ## Manual scaning
-   #   env:
-   #    GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-   #     SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
-   #     SONAR_HOST_URL: ${{ secrets.SONAR_HOST_URL }}
-   #   run: mvn verify org.sonarsource.scanner.maven:sonar-maven-plugin:sonar -Dsonar.projectKey=your-project-key
-
-    - name: SonarQube Scan # Use sonar action
-      uses: SonarSource/sonarqube-scan-action@master
-      env:
-        SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
-        SONAR_HOST_URL: ${{ secrets.SONAR_HOST_URL }}
-      with:
-        args: >
-          -Dsonar.projectKey=${{ secrets.SONAR_PROJECT_KEY}}
-          -Dsonar.sources=src
-        
     - name: Set up Docker Buildx
       uses: docker/setup-buildx-action@v3
 
@@ -94,16 +64,6 @@ jobs:
         build-args: |
           TMDB_V3_API_KEY=${{ secrets.TMDB_V3_API_KEY }}
 
-    - name: Run Trivy vulnerability scanner
-      uses: aquasecurity/trivy-action@master
-      with:
-        image-ref: '${{ secrets.DOCKERHUB_USERNAME }}/${{ github.event.repository.name }}:${{ steps.semver.outputs.next }}'
-        format: 'table'
-        exit-code: '1'
-        ignore-unfixed: true
-        vuln-type: 'os,library'
-        severity: 'CRITICAL,HIGH'
-
     - name: Update Helm Chart
       run: |
         sed -i 's/^appVersion:.*/appVersion: "${{ steps.semver.outputs.next }}"/' ./chart/Chart.yaml
@@ -118,4 +78,15 @@ jobs:
         git commit -m "Update Helm chart to version ${{ steps.semver.outputs.next }}"
         git push
 
-    # Optional steps remain commented out as in your original workflow
+    # Optional: Package Helm Chart
+    #- name: Package Helm Chart
+    #  run: helm package ./chart
+
+    # Optional: If you want to push the packaged chart to a repository
+    # - name: Push Helm Chart
+    #   run: |
+    #     helm repo add myrepo https://my.chart.repository.com
+    #     helm push ./chart-${{ steps.semver.outputs.next }}.tgz myrepo
+    #   env:
+    #     HELM_REPO_USERNAME: ${{ secrets.HELM_REPO_USERNAME }}
+    #     HELM_REPO_PASSWORD: ${{ secrets.HELM_REPO_PASSWORD }}
