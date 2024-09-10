@@ -4,4 +4,4 @@ type: application
 name: netflix
 version: 1.0.0
 deprecated: false
-appVersion: 1.0.0
+appVersion: 2.0.0
