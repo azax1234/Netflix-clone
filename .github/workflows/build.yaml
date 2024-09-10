@@ -74,6 +74,8 @@ jobs:
           -Dsonar.organization=${{ secrets.SONAR_ORG_KEY }}
           -Dsonar.projectKey=${{ secrets.SONAR_PROJECT_KEY }}
           -Dsonar.sources=src
+          -Dsonar.verbose=true
+          -X
         
     - name: Set up Docker Buildx
       uses: docker/setup-buildx-action@v3
