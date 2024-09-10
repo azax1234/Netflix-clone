@@ -12,6 +12,20 @@ jobs:
       with:
         fetch-depth: 0
 
+    - name: Check for existing tags and create initial if needed
+      id: check_tags
+      run: |
+        if [ -z "$(git tag)" ]; then
+          echo "No tags found. Creating initial tag v0.1.0"
+          git config user.name github-actions
+          git config user.email github-actions@github.com
+          git tag v0.1.0
+          git push origin v0.1.0
+          echo "initial_tag_created=true" >> $GITHUB_OUTPUT
+        else
+          echo "initial_tag_created=false" >> $GITHUB_OUTPUT
+        fi
+
     - name: Calculate SemVer
       id: semver
       uses: ietf-tools/semver-action@v1
