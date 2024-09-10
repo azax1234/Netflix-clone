@@ -16,7 +16,7 @@ import Logo from "../Logo";
 import SearchBox from "../SearchBox";
 import NetflixNavigationLink from "../NetflixNavigationLink";
 
-const pages = ["Arun's List", "Great 7.1.0 Movies", "Latest Tv Shows"];
+const pages = ["Arun's List", "Great 8.0.0 Movies", "Latest Tv Shows"];
 
 const MainHeader = () => {
   const isOffset = useOffSetTop(APP_BAR_HEIGHT);
