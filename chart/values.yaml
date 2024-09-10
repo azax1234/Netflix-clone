@@ -5,7 +5,8 @@ replicas: 1
 
 # Image Settings
 image:
-  repository: sevenajay/netflix
+  repository: azax1234/netflix-clone
+  #repository: sevenajay/netflix
   tag: latest
   pullPolicy: IfNotPresent
 
