@@ -1,17 +1,23 @@
-name: Docker Build and Push
+name: Build, Push Docker Image, and Update Helm Chart
 
 on:
   push:
-    branches: [ "main" ]
-  pull_request:
-    branches: [ "main" ]
+    branches: [ main ]
+
 jobs:
-  build-and-push:
+  build-push-update:
     runs-on: ubuntu-latest
-    
     steps:
-    - name: Checkout code
-      uses: actions/checkout@v4
+    - uses: actions/checkout@v4
+      with:
+        fetch-depth: 0
+
+    - name: Calculate SemVer
+      id: semver
+      uses: ietf-tools/semver-action@v1
+      with:
+        token: ${{ secrets.GITHUB_TOKEN }}
+        branch: main
 
     - name: Set up Docker Buildx
       uses: docker/setup-buildx-action@v3
@@ -27,6 +33,35 @@ jobs:
       with:
         context: .
         push: true
-        tags: ${{ secrets.DOCKERHUB_USERNAME }}/${{ github.event.repository.name }}:5.0.0
+        tags: |
+          ${{ secrets.DOCKERHUB_USERNAME }}/${{ github.event.repository.name }}:${{ steps.semver.outputs.next }}
+          ${{ secrets.DOCKERHUB_USERNAME }}/${{ github.event.repository.name }}:latest
         build-args: |
           TMDB_V3_API_KEY=${{ secrets.TMDB_V3_API_KEY }}
+
+    - name: Update Helm Chart
+      run: |
+        sed -i 's/^appVersion:.*/appVersion: "${{ steps.semver.outputs.next }}"/' ./chart/Chart.yaml
+        sed -i 's/^version:.*/version: ${{ steps.semver.outputs.next }}/' ./chart/Chart.yaml
+        sed -i 's/tag:.*/tag: "${{ steps.semver.outputs.next }}"/' ./chart/values.yaml
+
+    - name: Commit and Push Changes
+      run: |
+        git config --local user.email "action@github.com"
+        git config --local user.name "GitHub Action"
+        git add ./chart/Chart.yaml ./chart/values.yaml
+        git commit -m "Update Helm chart to version ${{ steps.semver.outputs.next }}"
+        git push
+
+    # Optional: Package Helm Chart
+    #- name: Package Helm Chart
+    #  run: helm package ./chart
+
+    # Optional: If you want to push the packaged chart to a repository
+    # - name: Push Helm Chart
+    #   run: |
+    #     helm repo add myrepo https://my.chart.repository.com
+    #     helm push ./chart-${{ steps.semver.outputs.next }}.tgz myrepo
+    #   env:
+    #     HELM_REPO_USERNAME: ${{ secrets.HELM_REPO_USERNAME }}
+    #     HELM_REPO_PASSWORD: ${{ secrets.HELM_REPO_PASSWORD }}
