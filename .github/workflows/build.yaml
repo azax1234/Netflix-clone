@@ -12,6 +12,13 @@ jobs:
       with:
         fetch-depth: 0
 
+    - name: Check commit message
+      run: |
+        if [[ "${{ github.event.head_commit.message }}" == *"skip ci"* ]]; then
+          echo "Skipping CI due to commit message"
+          exit 78
+        fi
+        
     - name: Check for existing tags and create initial if needed
       id: check_tags
       run: |
