@@ -12,11 +12,11 @@ image:
 
 # Resource capacity Settings
 requests:
-  memory: "0m" 
-  cpu: "250m"
+  memory: "1B" 
+  cpu: "1m"
 limits:
-  memory: "0m" 
-  cpu: "500m"  
+  memory: "1B" 
+  cpu: "1m"  
 
 # Service Settings
 service:
