@@ -2,6 +2,6 @@ apiVersion: v2
 description: A Helm chart for Netflix clone application
 type: application
 name: netflix
-version: v8.4.0
+version: v19.2.0
 deprecated: false
-appVersion: "v8.4.0"
+appVersion: "v19.2.0"
