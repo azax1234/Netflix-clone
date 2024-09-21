@@ -10,6 +10,14 @@ image:
   tag: "v8.4.0"
   pullPolicy: IfNotPresent
 
+# Resource capacity Settings
+requests:
+  memory: "128Mi" 
+  cpu: "250m"
+limits:
+  memory: "256Mi" 
+  cpu: "500m"  
+
 # Service Settings
 service:
   name: netflix-svcs-dev

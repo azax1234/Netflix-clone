@@ -34,4 +34,11 @@ spec:
             valueFrom:
               fieldRef:
                 fieldPath: status.podIP
-
+        resources:
+          requests:
+            memory: {{ .Values.requests.memory }}   # Minimum memory the container will get
+            cpu: {{ .Values.requests.cpu }}        # Minimum CPU the container will get
+          limits:
+            memory: {{ .Values.limits.memory }}   # Maximum memory the container can use
+            cpu: {{ .Values.limits.cpu }}       # Maximum CPU the container can use
+        
